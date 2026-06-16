@@ -1,22 +1,68 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, Image, Swiper, SwiperItem } from '@tarojs/components';
+import React, { useState, useMemo, useEffect } from 'react';
+import { View, Text, Image, Swiper, SwiperItem, Video } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
-import { machines } from '@/data/machines';
+import { useAppStore } from '@/store/useAppStore';
 import { formatPrice, formatHours, getRoleLabel } from '@/utils/format';
 import styles from './index.module.scss';
 
 const DetailPage = () => {
   const router = useRouter();
-  const [isFav, setIsFav] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showVideo, setShowVideo] = useState(false);
+
+  const machines = useAppStore((s) => s.machines);
+  const user = useAppStore((s) => s.user);
+  const isFavorite = useAppStore((s) => s.isFavorite);
+  const hasPriceAlert = useAppStore((s) => s.hasPriceAlert);
+  const addFavorite = useAppStore((s) => s.addFavorite);
+  const removeFavorite = useAppStore((s) => s.removeFavorite);
+  const setPriceAlert = useAppStore((s) => s.setPriceAlert);
+  const createConversation = useAppStore((s) => s.createConversation);
 
   const machine = useMemo(() => {
     const id = router.params.id;
     return machines.find((m) => m.id === id) || machines[0];
-  }, [router.params.id]);
+  }, [machines, router.params.id]);
+
+  const fav = useMemo(() => isFavorite(machine.id), [isFavorite, machine.id]);
+  const alert = useMemo(() => hasPriceAlert(machine.id), [hasPriceAlert, machine.id]);
+
+  const handleToggleFavorite = () => {
+    if (fav) {
+      removeFavorite(machine.id);
+      Taro.showToast({ title: '已取消收藏', icon: 'success' });
+    } else {
+      addFavorite(machine);
+      Taro.showToast({ title: '已收藏', icon: 'success' });
+    }
+  };
+
+  const handleTogglePriceAlert = () => {
+    if (!fav) {
+      Taro.showToast({ title: '请先收藏设备', icon: 'none' });
+      return;
+    }
+    setPriceAlert(machine.id, !alert);
+    Taro.showToast({ title: alert ? '已关闭降价提醒' : '已开启降价提醒', icon: 'success' });
+  };
 
   const handleChat = () => {
-    Taro.navigateTo({ url: `/pages/chat/index?machineId=${machine.id}` });
+    if (!user) return;
+
+    const existingConversations = useAppStore.getState().conversations;
+    const existingConv = existingConversations.find((c) => c.machineId === machine.id);
+
+    if (existingConv) {
+      Taro.navigateTo({ url: `/pages/chat/index?id=${existingConv.id}` });
+    } else {
+      const convId = createConversation(
+        machine.id,
+        { id: machine.sellerId, name: machine.sellerName, avatar: machine.sellerAvatar },
+        { title: machine.title, image: machine.coverImage, price: machine.price }
+      );
+      Taro.navigateTo({ url: `/pages/chat/index?id=${convId}` });
+    }
   };
 
   const handleBook = () => {
@@ -29,21 +75,64 @@ const DetailPage = () => {
     });
   };
 
+  const handleImageClick = (index: number) => {
+    if (index === 0 && machine.videoUrl) {
+      setShowVideo(true);
+    }
+  };
+
+  const allMedia = useMemo(() => {
+    const result = [...machine.images];
+    return result;
+  }, [machine.images]);
+
   return (
     <View className={styles.detailPage}>
       <View className={styles.imageSection}>
-        <Swiper className={styles.mainImage} autoplay circular indicatorDots>
-          {machine.images.map((img, idx) => (
-            <SwiperItem key={idx}>
-              <Image src={img} mode="aspectFill" style={{ width: '100%', height: '500rpx' }} />
-            </SwiperItem>
-          ))}
-        </Swiper>
-        {machine.videoUrl && (
-          <View className={styles.videoBadge}>
-            <Text className={styles.videoBadgeIcon}>▶️</Text>
-            <Text className={styles.videoBadgeText}>有视频</Text>
+        {showVideo && machine.videoUrl ? (
+          <View className={styles.videoContainer}>
+            <Video
+              className={styles.videoPlayer}
+              src={machine.videoUrl}
+              autoplay
+              controls
+              showFullscreenBtn
+              showCenterPlayBtn
+            />
+            <View className={styles.videoCloseBtn} onClick={() => setShowVideo(false)}>
+              <Text className={styles.videoCloseText}>✕ 返回图片</Text>
+            </View>
           </View>
+        ) : (
+          <>
+            <Swiper
+              className={styles.mainImage}
+              autoplay={false}
+              circular
+              indicatorDots
+              current={currentImageIndex}
+              onChange={(e) => setCurrentImageIndex(e.detail.current)}
+            >
+              {allMedia.map((img, idx) => (
+                <SwiperItem key={idx} onClick={() => handleImageClick(idx)}>
+                  <View className={styles.imageWrapper} style={{ backgroundImage: `url(${img})` }}>
+                    {idx === 0 && machine.videoUrl && (
+                      <View className={styles.playOverlay}>
+                        <Text className={styles.playIcon}>▶️</Text>
+                        <Text className={styles.playText}>点击播放视频</Text>
+                      </View>
+                    )}
+                  </View>
+                </SwiperItem>
+              ))}
+            </Swiper>
+            {machine.videoUrl && (
+              <View className={styles.videoBadge}>
+                <Text className={styles.videoBadgeIcon}>🎬</Text>
+                <Text className={styles.videoBadgeText}>有视频</Text>
+              </View>
+            )}
+          </>
         )}
       </View>
 
@@ -93,7 +182,7 @@ const DetailPage = () => {
       </View>
 
       <View className={styles.sellerSection}>
-        <Image className={styles.sellerAvatar} src={machine.sellerAvatar} mode="aspectFill" />
+        <View className={styles.sellerAvatar} style={{ backgroundImage: `url(${machine.sellerAvatar})` }} />
         <View className={styles.sellerInfo}>
           <Text className={styles.sellerName}>{machine.sellerName}</Text>
           <View className={styles.sellerMeta}>
@@ -119,14 +208,24 @@ const DetailPage = () => {
       </View>
 
       <View className={styles.bottomBar}>
-        <View className={styles.favBtn} onClick={() => setIsFav(!isFav)}>
-          <Text>{isFav ? '❤️' : '🤍'}</Text>
+        <View className={styles.favBtn} onClick={handleToggleFavorite}>
+          <Text className={styles.favIcon}>{fav ? '❤️' : '🤍'}</Text>
+          <Text className={styles.favText}>收藏</Text>
+        </View>
+        <View
+          className={classnames(styles.alertBtn, fav && styles.alertBtnActive)}
+          onClick={handleTogglePriceAlert}
+        >
+          <Text className={styles.alertIcon}>{alert ? '🔔' : '🔕'}</Text>
+          <Text className={classnames(styles.alertText, alert && styles.alertTextActive)}>
+            {alert ? '降价提醒开' : '降价提醒'}
+          </Text>
         </View>
         <View className={styles.bookBtn} onClick={handleBook}>
-          <Text>预约看机</Text>
+          <Text className={styles.bookBtnText}>预约看机</Text>
         </View>
         <View className={styles.callBtn} onClick={handleCall}>
-          <Text>电话咨询</Text>
+          <Text className={styles.callBtnText}>电话咨询</Text>
         </View>
       </View>
     </View>

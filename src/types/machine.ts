@@ -147,6 +147,7 @@ export interface UrgentRequest {
 }
 
 export interface PublishForm {
+  id?: string;
   brand: string;
   model: string;
   category: string;

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, Image, Input } from '@tarojs/components';
+import React, { useState, useMemo } from 'react';
+import { View, Text, Input } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
-import { machines } from '@/data/machines';
+import { useAppStore } from '@/store/useAppStore';
 import { formatPrice } from '@/utils/format';
+import type { Booking } from '@/types/machine';
 import styles from './index.module.scss';
 
 const TIME_SLOTS = ['今天上午', '今天下午', '明天上午', '明天下午', '后天上午', '后天下午'];
@@ -11,19 +12,46 @@ const TIME_SLOTS = ['今天上午', '今天下午', '明天上午', '明天下�
 const BookingPage = () => {
   const router = useRouter();
   const machineId = router.params.machineId || 'm_001';
-  const machine = machines.find((m) => m.id === machineId) || machines[0];
+
+  const machines = useAppStore((s) => s.machines);
+  const user = useAppStore((s) => s.user);
+  const addBooking = useAppStore((s) => s.addBooking);
+
+  const machine = useMemo(() => {
+    return machines.find((m) => m.id === machineId) || machines[0];
+  }, [machines, machineId]);
 
   const [selectedTime, setSelectedTime] = useState('');
-  const [contactName, setContactName] = useState('');
-  const [contactPhone, setContactPhone] = useState('');
+  const [contactName, setContactName] = useState(user?.name || '');
+  const [contactPhone, setContactPhone] = useState(user?.phone || '');
 
   const handleSubmit = () => {
     if (!selectedTime || !contactName || !contactPhone) {
       Taro.showToast({ title: '请填写完整信息', icon: 'none' });
       return;
     }
-    console.info('[Booking] 提交预约', { machineId, selectedTime, contactName, contactPhone });
+    if (!user) return;
+
+    const newBooking: Booking = {
+      id: `b_${Date.now()}`,
+      machineId: machine.id,
+      machineTitle: machine.title,
+      sellerId: machine.sellerId,
+      sellerName: machine.sellerName,
+      sellerPhone: '138****1234',
+      viewTime: selectedTime,
+      location: machine.location,
+      status: 'confirmed',
+      contactName,
+      contactPhone
+    };
+
+    addBooking(newBooking);
     Taro.showToast({ title: '预约成功', icon: 'success' });
+
+    setTimeout(() => {
+      Taro.redirectTo({ url: '/pages/bookings/index' });
+    }, 1500);
   };
 
   const handleNavigate = () => {
@@ -46,7 +74,7 @@ const BookingPage = () => {
   return (
     <View className={styles.bookingPage}>
       <View className={styles.machineCard}>
-        <Image className={styles.machineImage} src={machine.coverImage} mode="aspectFill" />
+        <View className={styles.machineImage} style={{ backgroundImage: `url(${machine.coverImage})` }} />
         <View className={styles.machineInfo}>
           <Text className={styles.machineTitle}>{machine.title}</Text>
           <Text className={styles.machinePrice}>{formatPrice(machine.price)}</Text>
@@ -112,7 +140,7 @@ const BookingPage = () => {
       <View className={styles.formSection}>
         <Text className={styles.sectionLabel}>卖家联系方式</Text>
         <View className={styles.sellerCard}>
-          <Image className={styles.sellerAvatar} src={machine.sellerAvatar} mode="aspectFill" />
+          <View className={styles.sellerAvatar} style={{ backgroundImage: `url(${machine.sellerAvatar})` }} />
           <View className={styles.sellerDetail}>
             <Text className={styles.sellerName}>{machine.sellerName}</Text>
             <Text className={styles.sellerPhone}>138****6789</Text>
@@ -125,7 +153,7 @@ const BookingPage = () => {
 
       <View className={styles.bottomBar}>
         <View className={styles.submitBtn} onClick={handleSubmit}>
-          <Text>确认预约</Text>
+          <Text className={styles.submitBtnText}>确认预约</Text>
         </View>
       </View>
     </View>

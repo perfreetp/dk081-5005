@@ -235,12 +235,18 @@
   height: $button-height-lg;
   border-radius: $radius-button;
   background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
-  font-size: $font-size-md;
-  color: $color-text-white;
-  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:active {
     opacity: 0.9;
     transform: scale(0.98);
   }
+}
+
+.submitBtnText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
 }

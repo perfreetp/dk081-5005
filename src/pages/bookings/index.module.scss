@@ -1,0 +1,336 @@
+@use '@/styles/variables.scss' as *;
+
+.bookingsPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.tabBar {
+  display: flex;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.tabItem {
+  @include button-reset;
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tabItemActive {
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60rpx;
+    height: 6rpx;
+    background: $color-primary;
+    border-radius: 3rpx;
+  }
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.tabTextActive {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.scrollView {
+  height: calc(100vh - 80rpx);
+}
+
+.list {
+  padding: $spacing-sm $spacing-lg;
+}
+
+.emptyWrap {
+  padding-top: 120rpx;
+}
+
+.bookingCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+}
+
+.bookingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.bookingTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.statusBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-xs;
+  margin-left: $spacing-sm;
+}
+
+.statusPending {
+  background: #FFF7E6;
+}
+
+.statusPendingText {
+  font-size: $font-size-xs;
+  color: #FA8C16;
+}
+
+.statusConfirmed {
+  background: #F6FFED;
+}
+
+.statusConfirmedText {
+  font-size: $font-size-xs;
+  color: $color-success;
+}
+
+.statusCompleted {
+  background: #E6F7FF;
+}
+
+.statusCompletedText {
+  font-size: $font-size-xs;
+  color: #1890FF;
+}
+
+.statusCancelled {
+  background: #FFF1F0;
+}
+
+.statusCancelledText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.bookingInfo {
+  border-top: 2rpx solid $color-border-light;
+  padding-top: $spacing-md;
+}
+
+.bookingRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: $spacing-sm;
+}
+
+.bookingLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  width: 120rpx;
+  flex-shrink: 0;
+}
+
+.bookingValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.bookingActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 2rpx solid $color-border-light;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: 64rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.actionBtnOutline {
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+}
+
+.actionBtnPrimary {
+  background: $color-primary;
+}
+
+.actionBtnSuccess {
+  background: $color-success;
+}
+
+.actionBtnDanger {
+  background: $color-error;
+}
+
+.actionBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.actionBtnTextPrimary {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.checklistCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+}
+
+.checklistTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm 0;
+  border-bottom: 2rpx solid $color-border-light;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.checklistCheck {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: $radius-xs;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+}
+
+.checklistUncheck {
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+}
+
+.checklistText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.failModalContent {
+  padding: $spacing-lg 0;
+}
+
+.failModalTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  text-align: center;
+  margin-bottom: $spacing-lg;
+}
+
+.failOption {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+  border-bottom: 2rpx solid $color-border-light;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.failOptionText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.failOptionCheck {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.failOptionCheckActive {
+  background: $color-primary;
+  border-color: $color-primary;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+}
+
+.modalFooter {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+  padding-top: $spacing-md;
+  border-top: 2rpx solid $color-border;
+}
+
+.modalCancelBtn,
+.modalConfirmBtn {
+  @include button-reset;
+  flex: 1;
+  height: 72rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.modalCancelBtn {
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+}
+
+.modalConfirmBtn {
+  background: $color-primary;
+}
+
+.modalCancelText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.modalConfirmText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}

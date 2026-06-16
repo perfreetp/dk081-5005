@@ -20,26 +20,8 @@
   color: $color-text-primary;
 }
 
-.alertToggle {
-  @include button-reset;
-  background: $color-tag-bg;
-  border-radius: $radius-round;
-  padding: 8rpx 20rpx;
-  height: 52rpx;
-
-  &:active {
-    opacity: 0.9;
-  }
-}
-
-.alertToggleText {
-  font-size: $font-size-sm;
-  color: $color-primary;
-  white-space: nowrap;
-}
-
-.alertToggleTextActive {
-  color: $color-price;
+.scrollView {
+  height: calc(100vh - 120rpx);
 }
 
 .list {
@@ -48,4 +30,107 @@
 
 .emptyWrap {
   padding-top: 120rpx;
+}
+
+.favoriteCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  gap: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.favoriteImage {
+  width: 160rpx;
+  height: 120rpx;
+  border-radius: $radius-md;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.favoriteInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.favoriteTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.favoritePrice {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-price;
+  margin-top: 4rpx;
+}
+
+.favoriteMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: 8rpx;
+}
+
+.favoriteCity {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.todayTag {
+  background: $color-tag-bg;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.todayTagText {
+  font-size: 20rpx;
+  color: $color-tag-text;
+}
+
+.alertBtn {
+  @include button-reset;
+  width: 100rpx;
+  height: 60rpx;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rpx;
+  align-self: center;
+  flex-shrink: 0;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.alertBtnActive {
+  border-color: $color-primary;
+  background: $color-tag-bg;
+}
+
+.alertIcon {
+  font-size: 28rpx;
+}
+
+.alertText {
+  font-size: 18rpx;
+  color: $color-text-tertiary;
+  white-space: nowrap;
+}
+
+.alertTextActive {
+  color: $color-primary;
 }

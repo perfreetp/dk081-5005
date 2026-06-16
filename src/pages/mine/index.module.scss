@@ -5,6 +5,32 @@
   background: $color-bg-page;
 }
 
+.scrollView {
+  height: 100vh;
+}
+
+.profileCompany {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4rpx;
+}
+
+.menuTitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  padding: $spacing-md $spacing-lg 0;
+}
+
+.footer {
+  padding: $spacing-xl $spacing-lg;
+  text-align: center;
+}
+
+.footerText {
+  font-size: $font-size-xs;
+  color: $color-text-disabled;
+}
+
 .profileHeader {
   background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
   padding: $spacing-xl $spacing-lg $spacing-xxl;

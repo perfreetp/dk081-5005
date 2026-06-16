@@ -1,20 +1,34 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import MachineCard from '@/components/MachineCard';
 import EmptyState from '@/components/EmptyState';
-import { machines, categories } from '@/data/machines';
+import { categories } from '@/data/machines';
+import { useAppStore } from '@/store/useAppStore';
 import styles from './index.module.scss';
 
+const ALL_CITIES = ['全部', '成都', '重庆', '绵阳', '德阳', '宜宾', '泸州', '南充', '乐山', '其他'];
+
 const FindPage = () => {
+  const machines = useAppStore((s) => s.machines);
+  const currentCity = useAppStore((s) => s.currentCity);
+  const setCurrentCity = useAppStore((s) => s.setCurrentCity);
+
   const [keyword, setKeyword] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
   const [canViewToday, setCanViewToday] = useState(false);
   const [includeTransport, setIncludeTransport] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('全部');
+  const [showCityPicker, setShowCityPicker] = useState(false);
+
+  useEffect(() => {
+    setSelectedCity(currentCity || '全部');
+  }, [currentCity]);
 
   const filteredMachines = useMemo(() => {
     let result = machines.filter((m) => m.status === 'active');
+
     if (keyword) {
       const kw = keyword.toLowerCase();
       result = result.filter(
@@ -24,17 +38,37 @@ const FindPage = () => {
           m.model.toLowerCase().includes(kw)
       );
     }
+
     if (activeCategory) {
       result = result.filter((m) => m.category === activeCategory);
     }
+
+    if (selectedCity && selectedCity !== '全部') {
+      result = result.filter((m) => m.city === selectedCity);
+    }
+
     if (canViewToday) {
       result = result.filter((m) => m.canViewToday);
     }
+
     if (includeTransport) {
       result = result.filter((m) => m.includeTransport);
     }
+
     return result;
-  }, [keyword, activeCategory, canViewToday, includeTransport]);
+  }, [machines, keyword, activeCategory, selectedCity, canViewToday, includeTransport]);
+
+  const stats = useMemo(() => {
+    const activeMachines = machines.filter((m) => m.status === 'active');
+    return {
+      total: activeMachines.length,
+      todayView: activeMachines.filter((m) => m.canViewToday).length,
+      withTransport: activeMachines.filter((m) => m.includeTransport).length,
+      nearby: selectedCity && selectedCity !== '全部'
+        ? activeMachines.filter((m) => m.city === selectedCity).length
+        : activeMachines.filter((m) => m.city === currentCity).length
+    };
+  }, [machines, selectedCity, currentCity]);
 
   const handleMachineClick = (id: string) => {
     Taro.navigateTo({ url: `/pages/detail/index?id=${id}` });
@@ -42,6 +76,19 @@ const FindPage = () => {
 
   const handleUrgent = () => {
     Taro.navigateTo({ url: '/pages/urgent/index' });
+  };
+
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    if (city !== '全部') {
+      setCurrentCity(city);
+    }
+    setShowCityPicker(false);
+  };
+
+  const getCityDisplay = () => {
+    if (selectedCity === '全部') return '全部城市';
+    return selectedCity;
   };
 
   return (
@@ -66,6 +113,32 @@ const FindPage = () => {
             onInput={(e) => setKeyword(e.detail.value)}
           />
         </View>
+      </View>
+
+      <View className={styles.citySection}>
+        <View className={styles.cityCurrent} onClick={() => setShowCityPicker(!showCityPicker)}>
+          <Text className={styles.cityCurrentText}>📍 {getCityDisplay()}</Text>
+          <Text className={styles.cityArrow}>{showCityPicker ? '▲' : '▼'}</Text>
+        </View>
+        <View className={styles.cityStats}>
+          <Text className={styles.cityStat}>附近{stats.nearby}台</Text>
+          <Text className={styles.cityStat}>当天可看{stats.todayView}台</Text>
+        </View>
+        {showCityPicker && (
+          <View className={styles.cityPicker}>
+            {ALL_CITIES.map((city) => (
+              <View
+                key={city}
+                className={classnames(styles.cityOption, selectedCity === city && styles.cityOptionActive)}
+                onClick={() => handleCitySelect(city)}
+              >
+                <Text className={classnames(styles.cityOptionText, selectedCity === city && styles.cityOptionTextActive)}>
+                  {city === '全部' ? '🌐' : '📍'} {city}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
 
       <View className={styles.categorySection}>
@@ -93,7 +166,7 @@ const FindPage = () => {
             onClick={() => setCanViewToday(!canViewToday)}
           >
             <Text className={classnames(styles.filterChipText, canViewToday && styles.filterChipTextActive)}>
-              当天可看
+              当天可看 {canViewToday && `(${stats.todayView})`}
             </Text>
           </View>
           <View
@@ -101,7 +174,7 @@ const FindPage = () => {
             onClick={() => setIncludeTransport(!includeTransport)}
           >
             <Text className={classnames(styles.filterChipText, includeTransport && styles.filterChipTextActive)}>
-              包板车
+              包板车 {includeTransport && `(${stats.withTransport})`}
             </Text>
           </View>
         </View>
