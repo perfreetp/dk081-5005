@@ -1,0 +1,94 @@
+@use '@/styles/variables.scss' as *;
+
+.item {
+  display: flex;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+  transition: all $transition-base;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  margin-left: $spacing-md;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.time {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.machineInfo {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.machineImage {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: $radius-xs;
+}
+
+.machineTitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+}
+
+.messageRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
+}
+
+.lastMessage {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.badge {
+  background: $color-error;
+  min-width: 36rpx;
+  height: 36rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8rpx;
+}
+
+.badgeText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  white-space: nowrap;
+}

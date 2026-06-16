@@ -1,0 +1,213 @@
+@use '@/styles/variables.scss' as *;
+
+.findPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $spacing-lg $spacing-xl;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -40rpx;
+    left: 0;
+    right: 0;
+    height: 80rpx;
+    background: $color-bg-page;
+    border-radius: 40rpx 40rpx 0 0;
+  }
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.brandWrap {
+  display: flex;
+  align-items: baseline;
+}
+
+.brandName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.brandSub {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 12rpx;
+}
+
+.urgentBtn {
+  @include button-reset;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  border-radius: $radius-round;
+  padding: 8rpx 24rpx;
+  height: 56rpx;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.urgentBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  white-space: nowrap;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: $radius-round;
+  padding: 0 $spacing-lg;
+  height: 72rpx;
+}
+
+.searchIcon {
+  font-size: $font-size-md;
+  margin-right: $spacing-sm;
+  color: $color-text-tertiary;
+}
+
+.searchInput {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  background: transparent;
+}
+
+.searchPlaceholder {
+  color: $color-text-tertiary;
+  font-size: $font-size-md;
+}
+
+.categorySection {
+  padding: $spacing-md $spacing-lg 0;
+  margin-bottom: $spacing-sm;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.categoryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.categoryItem {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: $color-bg-card;
+  padding: 12rpx 20rpx;
+  border-radius: $radius-round;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.categoryItemActive {
+  background: $color-tag-bg;
+  border: 2rpx solid $color-primary;
+}
+
+.categoryEmoji {
+  font-size: $font-size-md;
+}
+
+.categoryName {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.categoryNameActive {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.filterSection {
+  padding: 0 $spacing-lg;
+}
+
+.filterRow {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.filterChip {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  background: $color-bg-card;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-round;
+  padding: 8rpx 20rpx;
+  height: 56rpx;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.filterChipActive {
+  background: $color-tag-bg;
+  border-color: $color-primary;
+}
+
+.filterChipText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.filterChipTextActive {
+  color: $color-primary;
+}
+
+.listSection {
+  padding: $spacing-sm $spacing-lg;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.listTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.listCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.scrollView {
+  height: calc(100vh - 580rpx);
+}

@@ -1,0 +1,204 @@
+@use '@/styles/variables.scss' as *;
+
+.agreementPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.tabBar {
+  display: flex;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.tabItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md 0;
+  position: relative;
+  transition: all $transition-base;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.tabItemActive {
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 48rpx;
+    height: 6rpx;
+    border-radius: 3rpx;
+    background: $color-primary;
+  }
+}
+
+.tabText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.tabTextActive {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.agreementList {
+  padding: $spacing-md $spacing-lg;
+}
+
+.agreementCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.agreementHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.agreementMachine {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.statusBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-xs;
+  white-space: nowrap;
+}
+
+.statusPending {
+  background: #FFF7E6;
+}
+
+.statusPendingText {
+  font-size: $font-size-xs;
+  color: $color-warning;
+}
+
+.statusSigned {
+  background: #E8F7FF;
+}
+
+.statusSignedText {
+  font-size: $font-size-xs;
+  color: $color-deal;
+}
+
+.statusFailed {
+  background: #FFF1F0;
+}
+
+.statusFailedText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.statusCompleted {
+  background: #E8FFEA;
+}
+
+.statusCompletedText {
+  font-size: $font-size-xs;
+  color: $color-success;
+}
+
+.agreementInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.agreementRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.agreementLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.agreementValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.agreementPrice {
+  color: $color-price;
+}
+
+.failReason {
+  background: #FFF1F0;
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+  margin-top: $spacing-sm;
+}
+
+.failReasonText {
+  font-size: $font-size-sm;
+  color: $color-error;
+}
+
+.checklistCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.checklistTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.checklistCheck {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: $radius-xs;
+  background: $color-success;
+  color: $color-text-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+}
+
+.checklistUncheck {
+  background: $color-border;
+}
+
+.checklistText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}

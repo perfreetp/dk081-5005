@@ -1,0 +1,245 @@
+@use '@/styles/variables.scss' as *;
+
+.chatPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  display: flex;
+  flex-direction: column;
+}
+
+.machineBar {
+  background: $color-bg-card;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.machineImage {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-sm;
+}
+
+.machineInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.machineTitle {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  @include text-ellipsis;
+}
+
+.machinePrice {
+  font-size: $font-size-xs;
+  color: $color-price;
+  margin-top: 2rpx;
+}
+
+.messageList {
+  flex: 1;
+  padding: $spacing-md $spacing-lg;
+  overflow-y: auto;
+}
+
+.messageItem {
+  margin-bottom: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+}
+
+.messageSelf {
+  align-items: flex-end;
+}
+
+.messageOther {
+  align-items: flex-start;
+}
+
+.messageSender {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.messageBubble {
+  max-width: 500rpx;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-lg;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+}
+
+.messageSelf .messageBubble {
+  background: $color-primary;
+  color: $color-text-white;
+  border-top-right-radius: $radius-xs;
+}
+
+.messageOther .messageBubble {
+  background: $color-bg-card;
+  color: $color-text-primary;
+  border-top-left-radius: $radius-xs;
+  box-shadow: $shadow-card;
+}
+
+.bargainCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  border: 2rpx solid $color-border;
+  max-width: 500rpx;
+}
+
+.bargainTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.bargainRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.bargainLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.bargainValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.bargainStatus {
+  text-align: center;
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1rpx solid $color-divider;
+}
+
+.bargainStatusText {
+  font-size: $font-size-xs;
+  color: $color-warning;
+}
+
+.inspectionCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  border: 2rpx solid $color-border;
+  max-width: 500rpx;
+}
+
+.inspectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-deal;
+  margin-bottom: $spacing-sm;
+}
+
+.inspectionItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: 8rpx;
+}
+
+.inspectionDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+}
+
+.inspectionDotPass {
+  background: $color-success;
+}
+
+.inspectionDotIssue {
+  background: $color-error;
+}
+
+.inspectionDotWarning {
+  background: $color-warning;
+}
+
+.inspectionName {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.inspectionNote {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.inputBar {
+  background: $color-bg-card;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+  border-top: 1rpx solid $color-divider;
+}
+
+.inputField {
+  flex: 1;
+  height: 72rpx;
+  background: $color-bg-page;
+  border-radius: $radius-round;
+  padding: 0 $spacing-lg;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.sendBtn {
+  @include button-reset;
+  background: $color-primary;
+  border-radius: $radius-round;
+  padding: 0 $spacing-lg;
+  height: 72rpx;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.sendBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  white-space: nowrap;
+}
+
+.quickActions {
+  display: flex;
+  gap: $spacing-sm;
+  padding: 0 $spacing-lg $spacing-sm;
+  background: $color-bg-card;
+}
+
+.quickActionBtn {
+  @include button-reset;
+  background: $color-tag-bg;
+  border-radius: $radius-round;
+  padding: 4rpx 16rpx;
+  height: 48rpx;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.quickActionText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  white-space: nowrap;
+}

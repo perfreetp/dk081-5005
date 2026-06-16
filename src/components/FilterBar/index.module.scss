@@ -1,0 +1,37 @@
+@use '@/styles/variables.scss' as *;
+
+.filterBar {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  padding: $spacing-sm 0;
+}
+
+.filterItem {
+  padding: 8rpx 24rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  border: 2rpx solid $color-border;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.filterItemActive {
+  background: $color-tag-bg;
+  border-color: $color-primary;
+}
+
+.filterText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.filterTextActive {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}

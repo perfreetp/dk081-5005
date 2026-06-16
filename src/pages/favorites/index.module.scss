@@ -1,0 +1,51 @@
+@use '@/styles/variables.scss' as *;
+
+.favoritesPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  background: $color-bg-card;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.alertToggle {
+  @include button-reset;
+  background: $color-tag-bg;
+  border-radius: $radius-round;
+  padding: 8rpx 20rpx;
+  height: 52rpx;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.alertToggleText {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  white-space: nowrap;
+}
+
+.alertToggleTextActive {
+  color: $color-price;
+}
+
+.list {
+  padding: $spacing-sm $spacing-lg;
+}
+
+.emptyWrap {
+  padding-top: 120rpx;
+}

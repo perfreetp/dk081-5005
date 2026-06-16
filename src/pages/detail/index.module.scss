@@ -1,0 +1,293 @@
+@use '@/styles/variables.scss' as *;
+
+.detailPage {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.imageSection {
+  position: relative;
+  width: 100%;
+  height: 500rpx;
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+}
+
+.videoBadge {
+  position: absolute;
+  bottom: $spacing-lg;
+  right: $spacing-lg;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: $radius-round;
+  padding: 8rpx 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.videoBadgeIcon {
+  font-size: $font-size-sm;
+}
+
+.videoBadgeText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  white-space: nowrap;
+}
+
+.infoSection {
+  background: $color-bg-card;
+  margin: $spacing-md $spacing-lg;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+}
+
+.price {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-price;
+}
+
+.priceUnit {
+  font-size: $font-size-sm;
+  color: $color-price;
+}
+
+.minPriceTag {
+  background: #FFF1F0;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.minPriceText {
+  font-size: $font-size-xs;
+  color: $color-price;
+  white-space: nowrap;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-top: $spacing-sm;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: $spacing-md;
+}
+
+.tag {
+  background: $color-tag-bg;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-xs;
+}
+
+.tagText {
+  font-size: $font-size-xs;
+  color: $color-tag-text;
+  white-space: nowrap;
+}
+
+.metaGrid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: $spacing-lg;
+  gap: 0;
+}
+
+.metaItem {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-sm 0;
+}
+
+.metaLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.metaValue {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  margin-top: 4rpx;
+}
+
+.sellerSection {
+  background: $color-bg-card;
+  margin: $spacing-md $spacing-lg;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.sellerAvatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-round;
+}
+
+.sellerInfo {
+  flex: 1;
+}
+
+.sellerName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.sellerMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: 4rpx;
+}
+
+.sellerRoleTag {
+  background: $color-tag-bg;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.sellerRoleText {
+  font-size: $font-size-xs;
+  color: $color-tag-text;
+  white-space: nowrap;
+}
+
+.sellerLocation {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.chatBtn {
+  @include button-reset;
+  background: $color-primary;
+  border-radius: $radius-round;
+  padding: 12rpx 32rpx;
+  height: 60rpx;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.chatBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  white-space: nowrap;
+}
+
+.highlightsSection {
+  background: $color-bg-card;
+  margin: $spacing-md $spacing-lg;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.highlightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.highlightDot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  margin-top: 10rpx;
+  flex-shrink: 0;
+}
+
+.highlightText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $spacing-lg;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: $spacing-md;
+  z-index: 100;
+}
+
+.favBtn {
+  @include button-reset;
+  width: 88rpx;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  font-size: 36rpx;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.bookBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  background: $color-bg-page;
+  border: 2rpx solid $color-primary;
+  font-size: $font-size-md;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.callBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}

@@ -1,0 +1,155 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.95;
+    transform: scale(0.98);
+  }
+}
+
+.imageWrap {
+  position: relative;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: $radius-md;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+}
+
+.urgentBadge {
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  background: $color-urgent;
+  color: $color-text-white;
+  font-size: $font-size-xs;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  font-weight: $font-weight-semibold;
+}
+
+.yearBadge {
+  position: absolute;
+  bottom: 8rpx;
+  right: 8rpx;
+  background: rgba(0, 0, 0, 0.6);
+  color: $color-text-white;
+  font-size: $font-size-xs;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+}
+
+.info {
+  flex: 1;
+  margin-left: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.tag {
+  background: $color-tag-bg;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.tagText {
+  font-size: $font-size-xs;
+  color: $color-tag-text;
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+}
+
+.metaItem {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.metaDivider {
+  margin: 0 8rpx;
+  color: $color-text-disabled;
+  font-size: $font-size-sm;
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12rpx;
+}
+
+.priceWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.price {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-price;
+}
+
+.minPrice {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.seller {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.sellerAvatar {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: $radius-round;
+}
+
+.sellerName {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+  max-width: 80rpx;
+}
+
+.sellerRole {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  white-space: nowrap;
+}
