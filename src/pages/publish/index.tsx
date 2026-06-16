@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, Input, Textarea, Image, Video, ScrollView } from '@tarojs/components';
+import { View, Text, Input, Textarea, Image, Video, ScrollView, Modal } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
 import { categories } from '@/data/machines';
@@ -10,6 +10,8 @@ import styles from './index.module.scss';
 
 const QUICK_TAGS = ['当天可看', '包板车', '手续齐全', '急出', '可议价', '原厂漆', '准新车', '低工时'];
 
+type ListTab = 'active' | 'sold' | 'offline';
+
 const PublishPage = () => {
   const router = useRouter();
   const user = useAppStore((s) => s.user);
@@ -18,12 +20,15 @@ const PublishPage = () => {
   const myPublished = useAppStore((s) => s.myPublished);
   const publishMachine = useAppStore((s) => s.publishMachine);
   const updateMachine = useAppStore((s) => s.updateMachine);
+  const updateMachineStatus = useAppStore((s) => s.updateMachineStatus);
   const removeMachine = useAppStore((s) => s.removeMachine);
   const saveDraft = useAppStore((s) => s.saveDraft);
   const setCurrentDraft = useAppStore((s) => s.setCurrentDraft);
   const currentCity = useAppStore((s) => s.currentCity);
+  const incrementPublishedCount = useAppStore((s) => s.incrementPublishedCount);
 
-  const [activeTab, setActiveTab] = useState<'list' | 'form'>('list');
+  const [activeMainTab, setActiveMainTab] = useState<'list' | 'form'>('list');
+  const [activeListTab, setActiveListTab] = useState<ListTab>('active');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [category, setCategory] = useState('');
@@ -41,6 +46,8 @@ const PublishPage = () => {
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
   const [editingMachineId, setEditingMachineId] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [justPublishedMachine, setJustPublishedMachine] = useState<Machine | null>(null);
 
   useEffect(() => {
     if (currentDraft) {
@@ -63,9 +70,21 @@ const PublishPage = () => {
       setEditingDraftId(currentDraft.id || null);
       setEditingMachineId(null);
       setCurrentDraft(null);
-      setActiveTab('form');
+      setActiveMainTab('form');
     }
   }, [currentDraft]);
+
+  const filteredMachines = useMemo(() => {
+    return myPublished.filter((m) => m.status === activeListTab);
+  }, [myPublished, activeListTab]);
+
+  const stats = useMemo(() => {
+    return {
+      active: myPublished.filter((m) => m.status === 'active').length,
+      sold: myPublished.filter((m) => m.status === 'sold').length,
+      offline: myPublished.filter((m) => m.status === 'offline').length
+    };
+  }, [myPublished]);
 
   const highlights = useMemo(() => {
     const points: string[] = [];
@@ -203,7 +222,7 @@ const PublishPage = () => {
       console.info('[Publish] 更新成功', updatedMachine);
       Taro.showToast({ title: '更新成功', icon: 'success' });
       setTimeout(() => {
-        setActiveTab('list');
+        setActiveMainTab('list');
         resetForm();
       }, 1000);
     } else {
@@ -238,6 +257,7 @@ const PublishPage = () => {
       };
 
       publishMachine(newMachine);
+      incrementPublishedCount();
       console.info('[Publish] 发布成功', newMachine);
 
       if (editingDraftId) {
@@ -245,12 +265,8 @@ const PublishPage = () => {
         deleteDraft(editingDraftId);
       }
 
-      Taro.showToast({ title: '发布成功', icon: 'success' });
-
-      setTimeout(() => {
-        resetForm();
-        setActiveTab('list');
-      }, 1000);
+      setJustPublishedMachine(newMachine);
+      setShowSuccessModal(true);
     }
   };
 
@@ -273,6 +289,8 @@ const PublishPage = () => {
     setEditingDraftId(null);
     setEditingMachineId(null);
     setCurrentDraft(null);
+    setShowSuccessModal(false);
+    setJustPublishedMachine(null);
   };
 
   const handleEditMachine = (machine: Machine) => {
@@ -293,13 +311,13 @@ const PublishPage = () => {
     setVideoUrl(machine.videoUrl || '');
     setEditingMachineId(machine.id);
     setEditingDraftId(null);
-    setActiveTab('form');
+    setActiveMainTab('form');
   };
 
   const handleDeleteMachine = (id: string) => {
     Taro.showModal({
       title: '确认删除',
-      content: '确定要删除这条发布吗？',
+      content: '确定要删除这条发布吗？删除后不可恢复。',
       confirmColor: '#ff4d4f',
       success: (res) => {
         if (res.confirm) {
@@ -310,18 +328,72 @@ const PublishPage = () => {
     });
   };
 
+  const handleOffline = (id: string) => {
+    Taro.showModal({
+      title: '确认下架',
+      content: '下架后买家将无法在找车页看到这台设备，确定吗？',
+      success: (res) => {
+        if (res.confirm) {
+          updateMachineStatus(id, 'offline');
+          Taro.showToast({ title: '已下架', icon: 'success' });
+        }
+      }
+    });
+  };
+
+  const handleRelist = (id: string) => {
+    Taro.showModal({
+      title: '重新上架',
+      content: '上架后买家将能在找车页看到这台设备，确定吗？',
+      success: (res) => {
+        if (res.confirm) {
+          updateMachineStatus(id, 'active');
+          Taro.showToast({ title: '已上架', icon: 'success' });
+        }
+      }
+    });
+  };
+
   const handleGoDetail = (id: string) => {
     Taro.navigateTo({ url: `/pages/detail/index?id=${id}` });
+  };
+
+  const handleGoDetailAfterPublish = () => {
+    if (justPublishedMachine) {
+      setShowSuccessModal(false);
+      resetForm();
+      setActiveMainTab('list');
+      setTimeout(() => {
+        Taro.navigateTo({ url: `/pages/detail/index?id=${justPublishedMachine.id}` });
+      }, 100);
+    }
+  };
+
+  const handlePublishAnother = () => {
+    resetForm();
+    setActiveMainTab('form');
+  };
+
+  const handleBackToList = () => {
+    setShowSuccessModal(false);
+    resetForm();
+    setActiveMainTab('list');
+  };
+
+  const getStatusLabel = (status: Machine['status']) => {
+    if (status === 'active') return { text: '在售', className: styles.statusActive, textClass: styles.statusActiveText };
+    if (status === 'sold') return { text: '已售出', className: styles.statusSold, textClass: styles.statusSoldText };
+    return { text: '已下架', className: styles.statusOffline, textClass: styles.statusOfflineText };
   };
 
   return (
     <View className={styles.publishPage}>
       <View className={styles.tabBar}>
         <View
-          className={classnames(styles.tabItem, activeTab === 'list' && styles.tabItemActive)}
-          onClick={() => setActiveTab('list')}
+          className={classnames(styles.tabItem, activeMainTab === 'list' && styles.tabItemActive)}
+          onClick={() => setActiveMainTab('list')}
         >
-          <Text className={classnames(styles.tabText, activeTab === 'list' && styles.tabTextActive)}>
+          <Text className={classnames(styles.tabText, activeMainTab === 'list' && styles.tabTextActive)}>
             我的发布
           </Text>
           {myPublished.length > 0 && (
@@ -331,16 +403,16 @@ const PublishPage = () => {
           )}
         </View>
         <View
-          className={classnames(styles.tabItem, activeTab === 'form' && styles.tabItemActive)}
-          onClick={() => { resetForm(); setActiveTab('form'); }}
+          className={classnames(styles.tabItem, activeMainTab === 'form' && styles.tabItemActive)}
+          onClick={() => { resetForm(); setActiveMainTab('form'); }}
         >
-          <Text className={classnames(styles.tabText, activeTab === 'form' && styles.tabTextActive)}>
+          <Text className={classnames(styles.tabText, activeMainTab === 'form' && styles.tabTextActive)}>
             {editingMachineId ? '编辑设备' : '发布新车'}
           </Text>
         </View>
       </View>
 
-      {activeTab === 'list' ? (
+      {activeMainTab === 'list' ? (
         <ScrollView scrollY className={styles.listScroll}>
           {drafts.length > 0 && (
             <View className={styles.draftSection}>
@@ -373,65 +445,146 @@ const PublishPage = () => {
             </View>
           )}
 
+          <View className={styles.subTabBar}>
+            <View
+              className={classnames(styles.subTabItem, activeListTab === 'active' && styles.subTabItemActive)}
+              onClick={() => setActiveListTab('active')}
+            >
+              <Text className={classnames(styles.subTabText, activeListTab === 'active' && styles.subTabTextActive)}>
+                在售
+              </Text>
+              <Text className={classnames(styles.subTabCount, activeListTab === 'active' && styles.subTabCountActive)}>
+                {stats.active}
+              </Text>
+            </View>
+            <View
+              className={classnames(styles.subTabItem, activeListTab === 'sold' && styles.subTabItemActive)}
+              onClick={() => setActiveListTab('sold')}
+            >
+              <Text className={classnames(styles.subTabText, activeListTab === 'sold' && styles.subTabTextActive)}>
+                已售出
+              </Text>
+              <Text className={classnames(styles.subTabCount, activeListTab === 'sold' && styles.subTabCountActive)}>
+                {stats.sold}
+              </Text>
+            </View>
+            <View
+              className={classnames(styles.subTabItem, activeListTab === 'offline' && styles.subTabItemActive)}
+              onClick={() => setActiveListTab('offline')}
+            >
+              <Text className={classnames(styles.subTabText, activeListTab === 'offline' && styles.subTabTextActive)}>
+                已下架
+              </Text>
+              <Text className={classnames(styles.subTabCount, activeListTab === 'offline' && styles.subTabCountActive)}>
+                {stats.offline}
+              </Text>
+            </View>
+          </View>
+
           <View className={styles.publishedSection}>
-            <Text className={styles.sectionTitle}>已发布 ({myPublished.length}台)</Text>
-            {myPublished.length > 0 ? (
+            {filteredMachines.length > 0 ? (
               <View className={styles.publishedList}>
-                {myPublished.map((machine) => (
-                  <View key={machine.id} className={styles.publishedCard}>
+                {filteredMachines.map((machine) => {
+                  const statusConfig = getStatusLabel(machine.status);
+                  return (
                     <View
-                      className={styles.publishedImage}
-                      style={{ backgroundImage: `url(${machine.coverImage})` }}
+                      key={machine.id}
+                      className={styles.publishedCard}
                       onClick={() => handleGoDetail(machine.id)}
                     >
-                      {machine.status === 'active' ? (
-                        <View className={styles.statusActive}>
-                          <Text className={styles.statusActiveText}>在售</Text>
-                        </View>
-                      ) : (
-                        <View className={styles.statusSold}>
-                          <Text className={styles.statusSoldText}>已售出</Text>
-                        </View>
-                      )}
-                    </View>
-                    <View className={styles.publishedInfo}>
-                      <Text className={styles.publishedTitle}>{machine.title}</Text>
-                      <Text className={styles.publishedPrice}>{formatPrice(machine.price)}</Text>
-                      <View className={styles.publishedMeta}>
-                        <Text className={styles.publishedMetaText}>
-                          {machine.year}年 · {formatTime(machine.hours)}小时
-                        </Text>
-                        <Text className={styles.publishedMetaText}>📍 {machine.city}</Text>
-                      </View>
-                      <View className={styles.publishedActions}>
-                        <View
-                          className={styles.actionBtnOutline}
-                          onClick={() => handleEditMachine(machine)}
-                        >
-                          <Text className={styles.actionBtnOutlineText}>编辑</Text>
-                        </View>
-                        <View
-                          className={styles.actionBtnDanger}
-                          onClick={() => handleDeleteMachine(machine.id)}
-                        >
-                          <Text className={styles.actionBtnDangerText}>删除</Text>
+                      <View className={styles.publishedImage} style={{ backgroundImage: `url(${machine.coverImage})` }}>
+                        <View className={classnames(styles.statusBadge, statusConfig.className)}>
+                          <Text className={statusConfig.textClass}>{statusConfig.text}</Text>
                         </View>
                       </View>
+                      <View className={styles.publishedInfo}>
+                        <Text className={styles.publishedTitle}>{machine.title}</Text>
+                        <Text className={styles.publishedPrice}>{formatPrice(machine.price)}</Text>
+                        <View className={styles.publishedMeta}>
+                          <Text className={styles.publishedMetaText}>
+                            {machine.year}年 · {formatTime(machine.hours)}小时
+                          </Text>
+                          <Text className={styles.publishedMetaText}>📍 {machine.city}</Text>
+                        </View>
+                        <View className={styles.publishedActions} onClick={(e) => e.stopPropagation()}>
+                          {machine.status === 'active' && (
+                            <>
+                              <View
+                                className={styles.actionBtnOutline}
+                                onClick={() => handleEditMachine(machine)}
+                              >
+                                <Text className={styles.actionBtnOutlineText}>编辑</Text>
+                              </View>
+                              <View
+                                className={styles.actionBtnWarning}
+                                onClick={() => handleOffline(machine.id)}
+                              >
+                                <Text className={styles.actionBtnWarningText}>下架</Text>
+                              </View>
+                            </>
+                          )}
+                          {machine.status === 'offline' && (
+                            <>
+                              <View
+                                className={styles.actionBtnSuccess}
+                                onClick={() => handleRelist(machine.id)}
+                              >
+                                <Text className={styles.actionBtnSuccessText}>重新上架</Text>
+                              </View>
+                              <View
+                                className={styles.actionBtnDanger}
+                                onClick={() => handleDeleteMachine(machine.id)}
+                              >
+                                <Text className={styles.actionBtnDangerText}>删除</Text>
+                              </View>
+                            </>
+                          )}
+                          {machine.status === 'sold' && (
+                            <>
+                              <View
+                                className={styles.actionBtnOutline}
+                                onClick={() => handleEditMachine(machine)}
+                              >
+                                <Text className={styles.actionBtnOutlineText}>查看</Text>
+                              </View>
+                              <View
+                                className={styles.actionBtnWarning}
+                                onClick={() => handleRelist(machine.id)}
+                              >
+                                <Text className={styles.actionBtnWarningText}>重新上架</Text>
+                              </View>
+                            </>
+                          )}
+                        </View>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
             ) : (
               <View className={styles.emptyPublished}>
                 <Text className={styles.emptyIcon}>🚜</Text>
-                <Text className={styles.emptyTitle}>还没有发布设备</Text>
-                <Text className={styles.emptyDesc}>点击上方"发布新车"开始发布第一台设备吧</Text>
-                <View
-                  className={styles.emptyActionBtn}
-                  onClick={() => { resetForm(); setActiveTab('form'); }}
-                >
-                  <Text className={styles.emptyActionBtnText}>立即发布</Text>
-                </View>
+                <Text className={styles.emptyTitle}>
+                  {activeListTab === 'active' ? '还没有在售设备' :
+                   activeListTab === 'sold' ? '还没有已售出设备' : '还没有已下架设备'}
+                </Text>
+                <Text className={styles.emptyDesc}>
+                  {activeListTab === 'active'
+                    ? '点击上方"发布新车"开始发布第一台设备吧'
+                    : activeListTab === 'sold'
+                      ? '成功交易后这里会显示已售出的设备'
+                      : '下架的设备会在这里显示，可以重新上架'}
+                </Text>
+                {activeListTab !== 'sold' && (
+                  <View
+                    className={styles.emptyActionBtn}
+                    onClick={() => { resetForm(); setActiveMainTab('form'); }}
+                  >
+                    <Text className={styles.emptyActionBtnText}>
+                      {activeListTab === 'active' ? '立即发布' : '去看看在售设备'}
+                    </Text>
+                  </View>
+                )}
               </View>
             )}
           </View>
@@ -716,6 +869,32 @@ const PublishPage = () => {
           </View>
         </ScrollView>
       )}
+
+      <Modal
+        title="发布成功"
+        isOpen={showSuccessModal}
+        onClose={handleBackToList}
+        content={
+          <View className={styles.successModal}>
+            <Text className={styles.successIcon}>🎉</Text>
+            <Text className={styles.successTitle}>发布成功！</Text>
+            <Text className={styles.successDesc}>
+              {justPublishedMachine?.title || '您的设备'} 已成功发布
+            </Text>
+            <View className={styles.successActions}>
+              <View className={styles.successActionOutline} onClick={handleBackToList}>
+                <Text className={styles.successActionOutlineText}>返回我的发布</Text>
+              </View>
+              <View className={styles.successActionOutline} onClick={handlePublishAnother}>
+                <Text className={styles.successActionOutlineText}>继续发下一台</Text>
+              </View>
+              <View className={styles.successActionPrimary} onClick={handleGoDetailAfterPublish}>
+                <Text className={styles.successActionPrimaryText}>去详情页看看</Text>
+              </View>
+            </View>
+          </View>
+        }
+      />
     </View>
   );
 };

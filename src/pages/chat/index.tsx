@@ -4,7 +4,7 @@ import Taro, { useRouter } from '@tarojs/taro';
 import classnames from 'classnames';
 import { useAppStore } from '@/store/useAppStore';
 import { formatPrice } from '@/utils/format';
-import type { ChatMessage, InspectionInfo, BargainInfo } from '@/types/machine';
+import type { ChatMessage, InspectionInfo, BargainInfo, Agreement } from '@/types/machine';
 import styles from './index.module.scss';
 
 const INSPECTION_ITEMS = [
@@ -31,6 +31,8 @@ const ChatPage = () => {
   const conversations = useAppStore((s) => s.conversations);
   const chatMessages = useAppStore((s) => s.chatMessages);
   const addMessage = useAppStore((s) => s.addMessage);
+  const updateMessageBargainStatus = useAppStore((s) => s.updateMessageBargainStatus);
+  const addAgreement = useAppStore((s) => s.addAgreement);
 
   const conversation = useMemo(() => {
     return conversations.find((c) => c.id === convId) || conversations[0];
@@ -130,6 +132,76 @@ const ChatPage = () => {
     Taro.navigateTo({ url: `/pages/booking/index?machineId=${machine.id}` });
   };
 
+  const handleAcceptBargain = (message: ChatMessage) => {
+    if (!message.bargainInfo || !user) return;
+    Taro.showModal({
+      title: '接受砍价',
+      content: `确认以 ${formatPrice(message.bargainInfo.offeredPrice)} 成交？`,
+      success: (res) => {
+        if (res.confirm) {
+          updateMessageBargainStatus(convId, message.id, 'accepted');
+          const newAgreement: Agreement = {
+            id: `a_${Date.now()}`,
+            machineId: machine.id,
+            machineTitle: machine.title,
+            buyerId: message.senderId,
+            buyerName: message.senderName,
+            sellerId: user.id,
+            sellerName: user.name,
+            deposit: Math.round(message.bargainInfo.offeredPrice * 0.05),
+            totalPrice: message.bargainInfo.offeredPrice,
+            status: 'draft',
+            createdAt: new Date().toISOString()
+          };
+          addAgreement(newAgreement);
+          const systemMessage: ChatMessage = {
+            id: `msg_${Date.now()}`,
+            conversationId: convId,
+            senderId: 'system',
+            senderName: '系统',
+            content: '砍价已接受，定金协议已生成',
+            type: 'system',
+            createdAt: new Date().toISOString(),
+            isRead: false
+          };
+          addMessage(convId, systemMessage);
+          Taro.showToast({ title: '已生成协议', icon: 'success' });
+        }
+      }
+    });
+  };
+
+  const handleRejectBargain = (message: ChatMessage) => {
+    Taro.showModal({
+      title: '拒绝砍价',
+      content: '确认拒绝此出价？买家可以重新出价',
+      success: (res) => {
+        if (res.confirm) {
+          updateMessageBargainStatus(convId, message.id, 'rejected');
+          const systemMessage: ChatMessage = {
+            id: `msg_${Date.now()}`,
+            conversationId: convId,
+            senderId: 'system',
+            senderName: '系统',
+            content: '出价已被拒绝，可以重新出价',
+            type: 'system',
+            createdAt: new Date().toISOString(),
+            isRead: false
+          };
+          addMessage(convId, systemMessage);
+        }
+      }
+    });
+  };
+
+  const handleReBargain = (rejectedMessage?: ChatMessage) => {
+    if (rejectedMessage?.bargainInfo) {
+      const priceWan = rejectedMessage.bargainInfo.offeredPrice / 10000;
+      setBargainPrice(priceWan.toString());
+    }
+    setShowBargainModal(true);
+  };
+
   const toggleInspectionStatus = (index: number) => {
     setInspectionState(prev => {
       const newState = [...prev];
@@ -166,6 +238,15 @@ const ChatPage = () => {
       <ScrollView scrollY className={styles.messageList} ref={scrollRef}>
         {messages.map((msg) => {
           const isSelf = msg.senderId === user?.id;
+          if (msg.type === 'system') {
+            return (
+              <View key={msg.id} className={styles.systemMessage}>
+                <View className={styles.systemMessageBubble}>
+                  <Text>{msg.content}</Text>
+                </View>
+              </View>
+            );
+          }
           return (
             <View
               key={msg.id}
@@ -185,10 +266,38 @@ const ChatPage = () => {
                     <Text className={styles.bargainValue}>{formatPrice(msg.bargainInfo.offeredPrice)}</Text>
                   </View>
                   <View className={styles.bargainStatus}>
-                    <Text className={styles.bargainStatusText}>
-                      {msg.bargainInfo.status === 'pending' ? '等待回复' : msg.bargainInfo.status === 'accepted' ? '已接受' : '已拒绝'}
+                    <Text className={classnames(
+                      styles.bargainStatusText,
+                      msg.bargainInfo.status === 'accepted' && styles.bargainStatusAccepted,
+                      msg.bargainInfo.status === 'rejected' && styles.bargainStatusRejected
+                    )}>
+                      {msg.bargainInfo.status === 'pending' ? '等待回复' : msg.bargainInfo.status === 'accepted' ? '✓ 已接受' : '✗ 已拒绝'}
                     </Text>
                   </View>
+                  {msg.bargainInfo.status === 'pending' && !isSelf && (
+                    <View className={styles.bargainActions}>
+                      <View className={classnames(styles.bargainActionBtn, styles.bargainActionReject)} onClick={() => handleRejectBargain(msg)}>
+                        <Text className={styles.bargainActionText}>拒绝</Text>
+                      </View>
+                      <View className={classnames(styles.bargainActionBtn, styles.bargainActionAccept)} onClick={() => handleAcceptBargain(msg)}>
+                        <Text className={styles.bargainActionTextPrimary}>接受</Text>
+                      </View>
+                    </View>
+                  )}
+                  {msg.bargainInfo.status === 'rejected' && isSelf && (
+                    <View className={styles.bargainActions}>
+                      <View className={classnames(styles.bargainActionBtn, styles.bargainActionRebargain)} onClick={() => handleReBargain(msg)}>
+                        <Text className={styles.bargainActionTextPrimary}>重新出价</Text>
+                      </View>
+                    </View>
+                  )}
+                  {msg.bargainInfo.status === 'accepted' && (
+                    <View className={styles.bargainActions}>
+                      <View className={classnames(styles.bargainActionBtn, styles.bargainActionView)} onClick={() => Taro.navigateTo({ url: '/pages/bookings/index?tab=agreements' })}>
+                        <Text className={styles.bargainActionTextPrimary}>查看协议</Text>
+                      </View>
+                    </View>
+                  )}
                 </View>
               ) : msg.type === 'inspection' && msg.inspectionInfo ? (
                 <View className={styles.inspectionCard}>

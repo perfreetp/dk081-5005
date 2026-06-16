@@ -29,6 +29,7 @@ interface AppState {
 
   publishMachine: (machine: Machine) => void;
   updateMachine: (id: string, updates: Partial<Machine>) => void;
+  updateMachineStatus: (id: string, status: Machine['status']) => void;
   removeMachine: (id: string) => void;
 
   saveDraft: (draft: PublishForm, id?: string) => string;
@@ -50,6 +51,11 @@ interface AppState {
 
   addAgreement: (agreement: Agreement) => void;
   updateAgreementStatus: (id: string, status: Agreement['status'], failReason?: Agreement['failReason']) => void;
+
+  updateMessageBargainStatus: (conversationId: string, messageId: string, status: BargainInfo['status']) => void;
+
+  incrementDealCount: () => void;
+  incrementPublishedCount: () => void;
 }
 
 const defaultFilter: MachineFilter = {};
@@ -158,6 +164,11 @@ export const useAppStore = create<AppState>()(
       updateMachine: (id, updates) => set((state) => ({
         machines: state.machines.map((m) => (m.id === id ? { ...m, ...updates } : m)),
         myPublished: state.myPublished.map((m) => (m.id === id ? { ...m, ...updates } : m))
+      })),
+
+      updateMachineStatus: (id, status) => set((state) => ({
+        machines: state.machines.map((m) => (m.id === id ? { ...m, status } : m)),
+        myPublished: state.myPublished.map((m) => (m.id === id ? { ...m, status } : m))
       })),
 
       removeMachine: (id) => set((state) => ({
@@ -286,11 +297,35 @@ export const useAppStore = create<AppState>()(
         agreements: state.agreements.map((a) =>
           a.id === id ? { ...a, status, failReason: failReason || a.failReason } : a
         )
+      })),
+
+      updateMessageBargainStatus: (conversationId, messageId, status) => set((state) => {
+        const messages = state.chatMessages[conversationId] || [];
+        const updatedMessages = messages.map((msg) =>
+          msg.id === messageId && msg.bargainInfo
+            ? { ...msg, bargainInfo: { ...msg.bargainInfo, status } }
+            : msg
+        );
+        return {
+          chatMessages: {
+            ...state.chatMessages,
+            [conversationId]: updatedMessages
+          }
+        };
+      }),
+
+      incrementDealCount: () => set((state) => ({
+        user: state.user ? { ...state.user, dealCount: state.user.dealCount + 1 } : state.user
+      })),
+
+      incrementPublishedCount: () => set((state) => ({
+        user: state.user ? { ...state.user, publishedCount: state.user.publishedCount + 1 } : state.user
       }))
     }),
     {
       name: 'iron-trade-storage',
       partialize: (state) => ({
+        user: state.user,
         machines: state.machines,
         myPublished: state.myPublished,
         drafts: state.drafts,

@@ -40,6 +40,8 @@ const BookingsPage = () => {
   const addAgreement = useAppStore((s) => s.addAgreement);
   const machines = useAppStore((s) => s.machines);
   const user = useAppStore((s) => s.user);
+  const updateMachineStatus = useAppStore((s) => s.updateMachineStatus);
+  const incrementDealCount = useAppStore((s) => s.incrementDealCount);
 
   const getStatusBadge = (status: Booking['status']) => {
     const statusMap: Record<string, { className: string; text: string; textClass: string }> = {
@@ -146,6 +148,8 @@ const BookingsPage = () => {
   const handleConfirmComplete = () => {
     if (currentAgreementForChecklist) {
       updateAgreementStatus(currentAgreementForChecklist.id, 'completed');
+      updateMachineStatus(currentAgreementForChecklist.machineId, 'sold');
+      incrementDealCount();
       setShowChecklist(false);
       setCurrentAgreementForChecklist(null);
       Taro.showToast({ title: '交易已完成', icon: 'success' });
