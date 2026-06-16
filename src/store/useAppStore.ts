@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Machine, MachineFilter, UserProfile, Conversation, ChatMessage, Booking, Agreement, Favorite, PublishForm } from '@/types/machine';
-import { machines as initialMachines, conversations as initialConversations, chatMessages as initialChatMessages } from '@/data/machines';
-import { messages as initialMessagesData } from '@/data/messages';
+import { machines as initialMachines } from '@/data/machines';
+import { conversations as initialConversations, chatMessages as initialChatMessages } from '@/data/messages';
 
 interface ChatMessagesMap {
   [key: string]: ChatMessage[];
@@ -139,8 +139,8 @@ export const useAppStore = create<AppState>()(
       drafts: [],
       currentDraft: null,
       favorites: [],
-      conversations: initialMessagesData.conversations || initialConversations,
-      chatMessages: initialMessagesData.chatMessages || {},
+      conversations: initialConversations,
+      chatMessages: initialChatMessages,
       bookings: initialBookings,
       agreements: initialAgreements,
       currentCity: '成都',

@@ -6,6 +6,264 @@
   padding-bottom: 160rpx;
 }
 
+.tabBar {
+  display: flex;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tabItem {
+  @include button-reset;
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: $spacing-xs;
+}
+
+.tabItemActive {
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60rpx;
+    height: 6rpx;
+    background: $color-primary;
+    border-radius: 3rpx;
+  }
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.tabTextActive {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.tabBadge {
+  background: $color-primary;
+  border-radius: 20rpx;
+  padding: 2rpx 12rpx;
+  min-width: 32rpx;
+  text-align: center;
+}
+
+.tabBadgeText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.listScroll {
+  height: calc(100vh - 80rpx - 160rpx);
+}
+
+.formScroll {
+  height: calc(100vh - 80rpx - 160rpx);
+}
+
+.publishedSection {
+  padding: $spacing-md $spacing-lg;
+}
+
+.sectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.publishedList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.publishedCard {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.publishedImage {
+  width: 180rpx;
+  height: 140rpx;
+  border-radius: $radius-md;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.statusActive {
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  background: rgba(82, 196, 26, 0.9);
+  border-radius: $radius-xs;
+  padding: 2rpx 12rpx;
+}
+
+.statusActiveText {
+  font-size: 20rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.statusSold {
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: $radius-xs;
+  padding: 2rpx 12rpx;
+}
+
+.statusSoldText {
+  font-size: 20rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.publishedInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.publishedTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.publishedPrice {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-price;
+  margin-top: 4rpx;
+}
+
+.publishedMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: 8rpx;
+}
+
+.publishedMetaText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.publishedActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.actionBtnOutline {
+  @include button-reset;
+  flex: 1;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.actionBtnOutlineText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.actionBtnDanger {
+  @include button-reset;
+  flex: 1;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: #FFF1F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background: #FFCCC7;
+  }
+}
+
+.actionBtnDangerText {
+  font-size: $font-size-xs;
+  color: #ff4d4f;
+}
+
+.emptyPublished {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx $spacing-lg;
+}
+
+.emptyIcon {
+  font-size: 120rpx;
+  margin-bottom: $spacing-md;
+}
+
+.emptyTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-lg;
+  text-align: center;
+}
+
+.emptyActionBtn {
+  @include button-reset;
+  height: 72rpx;
+  padding: 0 $spacing-xl;
+  border-radius: $radius-round;
+  background: $color-primary;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.emptyActionBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
 .draftSection {
   background: $color-bg-card;
   margin: $spacing-md $spacing-lg 0;

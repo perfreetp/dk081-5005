@@ -59,16 +59,13 @@ const FindPage = () => {
   }, [machines, keyword, activeCategory, selectedCity, canViewToday, includeTransport]);
 
   const stats = useMemo(() => {
-    const activeMachines = machines.filter((m) => m.status === 'active');
     return {
-      total: activeMachines.length,
-      todayView: activeMachines.filter((m) => m.canViewToday).length,
-      withTransport: activeMachines.filter((m) => m.includeTransport).length,
-      nearby: selectedCity && selectedCity !== '全部'
-        ? activeMachines.filter((m) => m.city === selectedCity).length
-        : activeMachines.filter((m) => m.city === currentCity).length
+      total: filteredMachines.length,
+      todayView: filteredMachines.filter((m) => m.canViewToday).length,
+      withTransport: filteredMachines.filter((m) => m.includeTransport).length,
+      nearby: filteredMachines.length
     };
-  }, [machines, selectedCity, currentCity]);
+  }, [filteredMachines]);
 
   const handleMachineClick = (id: string) => {
     Taro.navigateTo({ url: `/pages/detail/index?id=${id}` });

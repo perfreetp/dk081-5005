@@ -95,15 +95,17 @@ const ChatPage = () => {
   const handleSendBargain = () => {
     if (!bargainPrice || !user) return;
 
-    const price = parseInt(bargainPrice);
-    if (isNaN(price) || price <= 0) {
+    const priceWan = parseFloat(bargainPrice);
+    if (isNaN(priceWan) || priceWan <= 0) {
       Taro.showToast({ title: '请输入有效价格', icon: 'none' });
       return;
     }
 
+    const priceYuan = Math.round(priceWan * 10000);
+
     const bargainInfo: BargainInfo = {
       originalPrice: machine.price,
-      offeredPrice: price,
+      offeredPrice: priceYuan,
       status: 'pending'
     };
 
@@ -112,7 +114,7 @@ const ChatPage = () => {
       conversationId: convId,
       senderId: user.id,
       senderName: user.name,
-      content: `出价 ${formatPrice(price)}`,
+      content: `出价 ${formatPrice(priceYuan)}`,
       type: 'bargain',
       bargainInfo,
       createdAt: new Date().toISOString(),

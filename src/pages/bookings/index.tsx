@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, Modal } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useRouter, useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import EmptyState from '@/components/EmptyState';
 import { useAppStore } from '@/store/useAppStore';
@@ -16,7 +16,17 @@ const FAIL_REASONS = [
 ];
 
 const BookingsPage = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'bookings' | 'agreements'>('bookings');
+
+  useEffect(() => {
+    const tabParam = router.params.tab;
+    if (tabParam === 'agreements') {
+      setActiveTab('agreements');
+    } else {
+      setActiveTab('bookings');
+    }
+  }, [router.params.tab]);
   const [showFailModal, setShowFailModal] = useState(false);
   const [selectedAgreement, setSelectedAgreement] = useState<Agreement | null>(null);
   const [selectedReason, setSelectedReason] = useState<string>('');

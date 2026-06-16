@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import ConversationItem from '@/components/ConversationItem';
 import EmptyState from '@/components/EmptyState';
-import { conversations } from '@/data/messages';
+import { useAppStore } from '@/store/useAppStore';
 import styles from './index.module.scss';
 
 const NOTIFICATIONS = [
@@ -40,10 +40,15 @@ const NOTIFICATIONS = [
 
 const MessagePage = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'notification'>('chat');
+  const conversations = useAppStore((s) => s.conversations);
+  const markAsRead = useAppStore((s) => s.markAsRead);
 
-  const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const totalUnread = useMemo(() => {
+    return conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  }, [conversations]);
 
   const handleConversationClick = (id: string) => {
+    markAsRead(id);
     Taro.navigateTo({ url: `/pages/chat/index?id=${id}` });
   };
 
